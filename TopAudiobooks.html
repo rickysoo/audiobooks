@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Ricky Soo" />
+<meta name="author" content="Soo Chee Kiong (17083991)" />
 
 
 <title>Top 100 Audiobooks</title>
@@ -1656,7 +1656,7 @@ summary {
 
 
 <h1 class="title toc-ignore">Top 100 Audiobooks</h1>
-<h4 class="author">Ricky Soo</h4>
+<h4 class="author">Soo Chee Kiong (17083991)</h4>
 <h4 class="date">November 6th, 2020</h4>
 
 </div>
@@ -1678,8 +1678,8 @@ items &lt;- 20</code></pre>
 </div>
 <div id="set-the-data-parameters" class="section level3">
 <h3>Set the data parameters</h3>
-<p>There are 11 data fields to be retrieved. A matrix is used to store the data retrieved.</p>
-<pre class="r"><code>cols &lt;- c(&#39;Rank&#39;, &#39;Title&#39;, &#39;Subtitle&#39;, &#39;Author&#39;, &#39;Narrator&#39;, &#39;Length&#39;, &#39;Release&#39;, &#39;Language&#39;, &#39;Stars&#39;, &#39;Ratings&#39;, &#39;Price&#39;)
+<p>There are 12 data fields to be retrieved. A matrix is used to store the data retrieved.</p>
+<pre class="r"><code>cols &lt;- c(&#39;Rank&#39;, &#39;Title&#39;, &#39;Subtitle&#39;, &#39;Author&#39;, &#39;Narrator&#39;, &#39;Length&#39;, &#39;Release&#39;, &#39;Language&#39;, &#39;Stars&#39;, &#39;Ratings&#39;, &#39;Price&#39;, &#39;URL&#39;)
 data &lt;- matrix(&#39;&#39;, nrow = pages * items, ncol = length(cols))
 colnames(data) &lt;- cols</code></pre>
 </div>
@@ -1765,14 +1765,32 @@ for (page in 1:pages) {
     price_node &lt;- html_node(html, price_selector)
     price &lt;- html_text(price_node, trim = TRUE)
     data[row, &#39;Price&#39;] &lt;- price
+    
+    # Web page address
+    url &lt;- paste0(&#39;https://www.audible.com&#39;, html_attr(title_node, &#39;href&#39;))
+    data[row, &#39;URL&#39;] &lt;- url
   }
 }</code></pre>
 </div>
 <div id="create-and-view-the-dataframe" class="section level3">
 <h3>Create and view the dataframe</h3>
-<p>Convert the matrix into a dataframe.</p>
+<p>Convert matrix into dataframe and show the first 10 rows.</p>
 <pre class="r"><code>df &lt;- as.data.frame(data)
-View(df)</code></pre>
+head(df, 10)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Rank"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Title"],"name":[2],"type":["chr"],"align":["left"]},{"label":["Subtitle"],"name":[3],"type":["chr"],"align":["left"]},{"label":["Author"],"name":[4],"type":["chr"],"align":["left"]},{"label":["Narrator"],"name":[5],"type":["chr"],"align":["left"]},{"label":["Length"],"name":[6],"type":["chr"],"align":["left"]},{"label":["Release"],"name":[7],"type":["chr"],"align":["left"]},{"label":["Language"],"name":[8],"type":["chr"],"align":["left"]},{"label":["Stars"],"name":[9],"type":["chr"],"align":["left"]},{"label":["Ratings"],"name":[10],"type":["chr"],"align":["left"]},{"label":["Price"],"name":[11],"type":["chr"],"align":["left"]},{"label":["URL"],"name":[12],"type":["chr"],"align":["left"]}],"data":[{"1":"1","2":"Greenlights","3":"NA","4":"Matthew McConaughey","5":"Matthew McConaughey","6":"6 hrs and 42 mins","7":"10-20-20","8":"English","9":"5 out of 5 stars","10":"7,258 ratings","11":"$28.00","12":"https://www.audible.com/pd/Greenlights-Audiobook/0593294181?ref=a_adblbests_c3_lProduct_1_1&pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&pf_rd_r=SFT5FHA3NZ3TTVYWXZJ2","_rn_":"1"},{"1":"2","2":"The Ice Diaries","3":"The Untold Story of the Cold War's Most Daring Mission","4":"Captain William R. Anderson, Don Keith - contributor","5":"Roger Mueller","6":"10 hrs and 1 min","7":"10-15-19","8":"English","9":"5 out of 5 stars","10":"7 ratings","11":"$30.79","12":"https://www.audible.com/pd/The-Ice-Diaries-Audiobook/1401605508?ref=a_adblbests_c3_lProduct_1_2&pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&pf_rd_r=SFT5FHA3NZ3TTVYWXZJ2","_rn_":"2"},{"1":"3","2":"Tiny Habits","3":"The Small Changes That Change Everything","4":"BJ Fogg PhD","5":"BJ Fogg PhD","6":"11 hrs and 22 mins","7":"01-14-20","8":"English","9":"4.5 out of 5 stars","10":"742 ratings","11":"$34.95","12":"https://www.audible.com/pd/Tiny-Habits-Audiobook/B082VKHVCL?ref=a_adblbests_c3_lProduct_1_3&pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&pf_rd_r=SFT5FHA3NZ3TTVYWXZJ2","_rn_":"3"},{"1":"4","2":"A Time for Mercy","3":"A Jack Brigance Novel","4":"John Grisham","5":"Michael Beck","6":"19 hrs and 59 mins","7":"10-13-20","8":"English","9":"5 out of 5 stars","10":"3,558 ratings","11":"$31.50","12":"https://www.audible.com/pd/A-Time-for-Mercy-Audiobook/0593168550?ref=a_adblbests_c3_lProduct_1_4&pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&pf_rd_r=SFT5FHA3NZ3TTVYWXZJ2","_rn_":"4"},{"1":"5","2":"The Sentinel","3":"A Jack Reacher Novel","4":"Lee Child, Andrew Child","5":"Scott Brick","6":"10 hrs and 39 mins","7":"10-27-20","8":"English","9":"4.5 out of 5 stars","10":"1,433 ratings","11":"$31.50","12":"https://www.audible.com/pd/The-Sentinel-Audiobook/059333972X?ref=a_adblbests_c3_lProduct_1_5&pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&pf_rd_r=SFT5FHA3NZ3TTVYWXZJ2","_rn_":"5"},{"1":"6","2":"Clanlands","3":"Whisky, Warfare, and a Scottish Adventure Like No Other","4":"Sam Heughan, Graham McTavish, Diana Gabaldon - foreword","5":"Graham McTavish, Sam Heughan, Diana Gabaldon - foreword","6":"10 hrs and 22 mins","7":"11-03-20","8":"English","9":"5 out of 5 stars","10":"167 ratings","11":"$21.81","12":"https://www.audible.com/pd/Clanlands-Audiobook/1529342015?ref=a_adblbests_c3_lProduct_1_6&pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&pf_rd_r=SFT5FHA3NZ3TTVYWXZJ2","_rn_":"6"},{"1":"7","2":"Ready Player Two","3":"A Novel","4":"Ernest Cline","5":"Wil Wheaton","6":"16 hrs","7":"11-24-20","8":"English","9":"NA","10":"Not rated yet","11":"$35.00","12":"https://www.audible.com/pd/Ready-Player-Two-Audiobook/0593396960?ref=a_adblbests_c3_lProduct_1_7&pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&pf_rd_r=SFT5FHA3NZ3TTVYWXZJ2","_rn_":"7"},{"1":"8","2":"A Promised Land","3":"NA","4":"Barack Obama","5":"Barack Obama","6":"29 hrs and 10 mins","7":"11-17-20","8":"English","9":"NA","10":"Not rated yet","11":"$45.50","12":"https://www.audible.com/pd/A-Promised-Land-Audiobook/0525633723?ref=a_adblbests_c3_lProduct_1_8&pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&pf_rd_r=SFT5FHA3NZ3TTVYWXZJ2","_rn_":"8"},{"1":"9","2":"The Best of Me","3":"NA","4":"David Sedaris","5":"David Sedaris","6":"13 hrs and 8 mins","7":"11-03-20","8":"English","9":"4 out of 5 stars","10":"15 ratings","11":"$30.79","12":"https://www.audible.com/pd/The-Best-of-Me-Audiobook/1549160761?ref=a_adblbests_c3_lProduct_1_9&pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&pf_rd_r=SFT5FHA3NZ3TTVYWXZJ2","_rn_":"9"},{"1":"10","2":"Atomic Habits","3":"An Easy & Proven Way to Build Good Habits & Break Bad Ones","4":"James Clear","5":"James Clear","6":"5 hrs and 35 mins","7":"10-16-18","8":"English","9":"5 out of 5 stars","10":"47,058 ratings","11":"$28.00","12":"https://www.audible.com/pd/Atomic-Habits-Audiobook/1524779261?ref=a_adblbests_c3_lProduct_1_10&pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&pf_rd_r=SFT5FHA3NZ3TTVYWXZJ2","_rn_":"10"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>View the whole dataframe.</p>
+<pre class="r"><code>View(df)</code></pre>
+<p>View only the rank and audiobook title.</p>
+<pre class="r"><code>df[ , c(&#39;Rank&#39;, &#39;Title&#39;)]</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Rank"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Title"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"1","2":"Greenlights"},{"1":"2","2":"The Ice Diaries"},{"1":"3","2":"Tiny Habits"},{"1":"4","2":"A Time for Mercy"},{"1":"5","2":"The Sentinel"},{"1":"6","2":"Clanlands"},{"1":"7","2":"Ready Player Two"},{"1":"8","2":"A Promised Land"},{"1":"9","2":"The Best of Me"},{"1":"10","2":"Atomic Habits"},{"1":"11","2":"Rhythm of War"},{"1":"12","2":"Fortune and Glory"},{"1":"13","2":"Our Time Is Now"},{"1":"14","2":"Can't Hurt Me"},{"1":"15","2":"Harry Potter and the Sorcerer's Stone, Book 1"},{"1":"16","2":"The Guest List"},{"1":"17","2":"Think Like a Monk"},{"1":"18","2":"Caste (Oprah's Book Club)"},{"1":"19","2":"Untamed"},{"1":"20","2":"Where the Crawdads Sing"},{"1":"21","2":"Harry Potter and the Chamber of Secrets, Book 2"},{"1":"22","2":"Heaven's River"},{"1":"23","2":"Lead from the Outside"},{"1":"24","2":"Harry Potter and the Deathly Hallows, Book 7"},{"1":"25","2":"Harry Potter and the Goblet of Fire, Book 4"},{"1":"26","2":"Becoming"},{"1":"27","2":"Harry Potter and the Prisoner of Azkaban, Book 3"},{"1":"28","2":"Wicca Book of Spells"},{"1":"29","2":"Harry Potter and the Half-Blood Prince, Book 6"},{"1":"30","2":"Harry Potter and the Order of the Phoenix, Book 5"},{"1":"31","2":"The Subtle Art of Not Giving a F*ck"},{"1":"32","2":"Dune"},{"1":"33","2":"Midnight Sun"},{"1":"34","2":"Anxious People"},{"1":"35","2":"The Invisible Life of Addie LaRue"},{"1":"36","2":"The Return"},{"1":"37","2":"Blackout"},{"1":"38","2":"12 Rules for Life"},{"1":"39","2":"How to Destroy America in Three Easy Steps"},{"1":"40","2":"Brushfire"},{"1":"41","2":"Of Sea and Shadow"},{"1":"42","2":"Pretty Things"},{"1":"43","2":"The Searcher"},{"1":"44","2":"Born a Crime"},{"1":"45","2":"American Dirt (Oprah's Book Club)"},{"1":"46","2":"The Vanishing Half"},{"1":"47","2":"The Evening and the Morning"},{"1":"48","2":"How to Win Friends & Influence People"},{"1":"49","2":"Extreme Ownership"},{"1":"50","2":"The Sandman"},{"1":"51","2":"The Fellowship of the Ring"},{"1":"52","2":"Rich Dad Poor Dad"},{"1":"53","2":"Never Split the Difference"},{"1":"54","2":"Sorry I Missed You"},{"1":"55","2":"The Five Love Languages: The Secret to Love That Lasts"},{"1":"56","2":"Didn't See That Coming"},{"1":"57","2":"Talking to Strangers"},{"1":"58","2":"The 7 Habits of Highly Effective People"},{"1":"59","2":"The Chronicles of Narnia Adult Box Set"},{"1":"60","2":"Unfu*k Yourself"},{"1":"61","2":"The Silent Patient"},{"1":"62","2":"Ready Player One"},{"1":"63","2":"The Four Agreements"},{"1":"64","2":"Sapiens"},{"1":"65","2":"The Stand"},{"1":"66","2":"The Dutch House"},{"1":"67","2":"Invisible Girl"},{"1":"68","2":"The Power of Now"},{"1":"69","2":"Breath"},{"1":"70","2":"The Law of Innocence"},{"1":"71","2":"The Body Keeps the Score"},{"1":"72","2":"American Buffalo"},{"1":"73","2":"Burnout"},{"1":"74","2":"Too Much and Never Enough"},{"1":"75","2":"The Way of Kings"},{"1":"76","2":"The Meaning of Mariah Carey"},{"1":"77","2":"Educated"},{"1":"78","2":"The Practice"},{"1":"79","2":"Dare to Lead"},{"1":"80","2":"The Parasitic Mind"},{"1":"81","2":"Rage"},{"1":"82","2":"A Kingdom of Flesh and Fire"},{"1":"83","2":"Daylight"},{"1":"84","2":"Battle Ground"},{"1":"85","2":"The Giver of Stars"},{"1":"86","2":"Troubled Blood"},{"1":"87","2":"From Blood and Ash"},{"1":"88","2":"48 Laws of Power"},{"1":"89","2":"The Salvage Crew"},{"1":"90","2":"White Fragility"},{"1":"91","2":"Is This Anything?"},{"1":"92","2":"How to Be an Antiracist"},{"1":"93","2":"The Gifts of Imperfection, 10th Anniversary Edition"},{"1":"94","2":"The Alchemist"},{"1":"95","2":"The Total Money Makeover"},{"1":"96","2":"We Are Legion (We Are Bob)"},{"1":"97","2":"Think and Grow Rich"},{"1":"98","2":"The Ballad of Songbirds and Snakes"},{"1":"99","2":"If You Tell"},{"1":"100","2":"The Things We Cannot Say"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 </div>
 <div id="save-dataframe-to-a-time-stamped-file" class="section level3">
 <h3>Save dataframe to a time-stamped file</h3>

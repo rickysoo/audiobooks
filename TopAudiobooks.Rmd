@@ -1,6 +1,6 @@
 ---
 title: "Top 100 Audiobooks"
-author: "Ricky Soo"
+author: "Soo Chee Kiong (17083991)"
 date: "November 6th, 2020"
 output:
   html_document:
@@ -31,10 +31,10 @@ items <- 20
 
 ### Set the data parameters
 
-There are 11 data fields to be retrieved. A matrix is used to store the data retrieved.
+There are 12 data fields to be retrieved. A matrix is used to store the data retrieved.
 
 ```{r}
-cols <- c('Rank', 'Title', 'Subtitle', 'Author', 'Narrator', 'Length', 'Release', 'Language', 'Stars', 'Ratings', 'Price')
+cols <- c('Rank', 'Title', 'Subtitle', 'Author', 'Narrator', 'Length', 'Release', 'Language', 'Stars', 'Ratings', 'Price', 'URL')
 data <- matrix('', nrow = pages * items, ncol = length(cols))
 colnames(data) <- cols
 ```
@@ -123,17 +123,33 @@ for (page in 1:pages) {
     price_node <- html_node(html, price_selector)
     price <- html_text(price_node, trim = TRUE)
     data[row, 'Price'] <- price
+    
+    # Web page address
+    url <- paste0('https://www.audible.com', html_attr(title_node, 'href'))
+    data[row, 'URL'] <- url
   }
 }
 ```
 
 ### Create and view the dataframe
 
-Convert the matrix into a dataframe.
+Convert matrix into dataframe and show the first 10 rows.
 
 ```{r}
 df <- as.data.frame(data)
+head(df, 10)
+```
+
+View the whole dataframe.
+
+```{r}
 View(df)
+```
+
+View only the rank and audiobook title.
+
+```{r}
+df[ , c('Rank', 'Title')]
 ```
 
 ### Save dataframe to a time-stamped file

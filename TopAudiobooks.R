@@ -4,7 +4,7 @@ library(rvest)
 pages <- 5
 items <- 20
 
-cols <- c('Rank', 'Title', 'Subtitle', 'Author', 'Narrator', 'Length', 'Release', 'Language', 'Stars', 'Ratings', 'Price')
+cols <- c('Rank', 'Title', 'Subtitle', 'Author', 'Narrator', 'Length', 'Release', 'Language', 'Stars', 'Ratings', 'Price', 'URL')
 data <- matrix('', nrow = pages * items, ncol = length(cols))
 colnames(data) <- cols
 
@@ -87,11 +87,18 @@ for (page in 1:pages) {
     price_node <- html_node(html, price_selector)
     price <- html_text(price_node, trim = TRUE)
     data[row, 'Price'] <- price
+    
+    # Web page address
+    url <- paste0('https://www.audible.com', html_attr(title_node, 'href'))
+    data[row, 'URL'] <- url
   }
 }
 
 df <- as.data.frame(data)
+head(df, 10)
+
 View(df)
+df[ , c('Rank', 'Title')]
 
 filename <- paste0('TopAudiobooks-', format(Sys.time(), '%Y%m%d-%H%M%S'), '.csv')
 write.csv(df, filename, row.names = FALSE)
