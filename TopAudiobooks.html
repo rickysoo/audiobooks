@@ -1662,90 +1662,105 @@ summary {
 </div>
 
 
-<p>Would you like to know the top 100 audiobooks on the Internet whenever you want? I would love to!</p>
-<p>I’m a big fan of audio books, having been a paying subscriber to Audible.com for many years.</p>
-<p>In this R notebook, we will retrieve the current 100 bestsellers on Audible.com and save them into a dataframe.</p>
-<p>For this to work, 5 publicly available web pages are retrieved from Audible.com web site for further processing.</p>
+<p>Would you like to know what the top 100 audiobooks are whenever you want? I’m a big fan of audio books, having been a paying subscriber to Audible.com for many years.</p>
+<p>Here, we will retrieve the current 100 bestsellers on Audible.com and save them into a dataframe. 5 publicly available web pages are retrieved from Audible.com web site for further processing.</p>
 <div id="import-libraries" class="section level3">
 <h3>Import libraries</h3>
+<p>Required for web scraping in R.</p>
 <pre class="r"><code>library(xml2)
 library(rvest)</code></pre>
 </div>
 <div id="set-number-of-pages-and-number-of-items-per-page" class="section level3">
 <h3>Set number of pages and number of items per page</h3>
+<p>We are going to retrieve 20 audiobooks from each of 5 pages.</p>
 <pre class="r"><code>pages &lt;- 5
 items &lt;- 20</code></pre>
 </div>
 <div id="set-the-data-parameters" class="section level3">
 <h3>Set the data parameters</h3>
+<p>There are 11 data fields to be retrieved. A matrix is used to store the data retrieved.</p>
 <pre class="r"><code>cols &lt;- c(&#39;Rank&#39;, &#39;Title&#39;, &#39;Subtitle&#39;, &#39;Author&#39;, &#39;Narrator&#39;, &#39;Length&#39;, &#39;Release&#39;, &#39;Language&#39;, &#39;Stars&#39;, &#39;Ratings&#39;, &#39;Price&#39;)
 data &lt;- matrix(&#39;&#39;, nrow = pages * items, ncol = length(cols))
 colnames(data) &lt;- cols</code></pre>
 </div>
 <div id="retrieve-and-process-100-items-from-5-web-pages" class="section level3">
 <h3>Retrieve and process 100 items from 5 web pages</h3>
-<pre class="r"><code>for (page in 1:pages) {
+<p>Now we go to each page, extract the data, do some minimal cleaning, and put the them into the matrix.</p>
+<pre class="r"><code># Loop through the pages
+for (page in 1:pages) {
   url &lt;- paste0(&#39;https://www.audible.com/adblbestsellers?page=&#39;, page)
   html &lt;- read_html(url)
 
+  # Loop through the items on a page
   for (item_num in 1:items) {
     row &lt;- (page - 1) * items + item_num
 
     item_selector &lt;- paste0(&#39;#product-list-a11y-skiplink-target &gt; span &gt; ul &gt; div &gt; li:nth-child(&#39;, item_num, &#39;) &gt; div &gt; div.bc-col-responsive.bc-spacing-top-none.bc-col-8 &gt; div &gt; div.bc-col-responsive.bc-col-6 &gt; div &gt; div &gt; span &gt; ul&#39;)
     item_node &lt;- html_node(html, item_selector)
 
+    # The audiobook ranking
     data[row, &#39;Rank&#39;] &lt;- row
     
+    # The audiobook title
     title_selector &lt;- &#39;li:nth-child(1) &gt; h3 &gt; a&#39;
     title_node &lt;- html_node(item_node, title_selector)
     title &lt;- html_text(title_node, trim = TRUE)
     data[row, &#39;Title&#39;] &lt;- title
 
+    # The audiobook subtitle. It&#39;s empty for some items.
     subtitle_selector &lt;- &#39;li.bc-list-item.subtitle &gt; span&#39;
     subtitle_node &lt;- html_node(item_node, subtitle_selector)
     subtitle &lt;- html_text(subtitle_node, trim = TRUE)
     data[row, &#39;Subtitle&#39;] &lt;- subtitle
     
+    # The author. There might be more than one.
     author_selector &lt;- &#39;li.bc-list-item.authorLabel &gt; span &gt; a&#39;
     author_nodes &lt;- html_nodes(item_node, author_selector)
     authors &lt;- html_text(author_nodes, trim = TRUE)
     author &lt;- paste(authors, collapse = &#39;, &#39;)
     data[row, &#39;Author&#39;] &lt;- author
     
+    # The narrator. There might be more than one.
     narrator_selector &lt;- &#39;li.bc-list-item.narratorLabel &gt; span &gt; a&#39;
     narrator_nodes &lt;- html_nodes(item_node, narrator_selector)
     narrators &lt;- html_text(narrator_nodes, trim = TRUE)
     narrator &lt;- paste(narrators, collapse = &#39;, &#39;)
     data[row, &#39;Narrator&#39;] &lt;- narrator
     
+    # The audiobook length in hours and minutes
     length_selector &lt;- &#39;li.bc-list-item.runtimeLabel &gt; span&#39;
     length_node &lt;- html_node(item_node, length_selector)
     length &lt;- html_text(length_node, trim = TRUE)
     length &lt;- gsub(&#39;Length: &#39;, &#39;&#39;, length)
     data[row, &#39;Length&#39;] &lt;- length
-    
+
+    # The release date    
     release_selector &lt;- &#39;li.bc-list-item.releaseDateLabel &gt; span&#39;
     release_node &lt;- html_node(item_node, release_selector)
     release &lt;- html_text(release_node, trim = TRUE)
     release &lt;- gsub(&#39;Release date:\n\\s+&#39;, &#39;&#39;, release)
     data[row, &#39;Release&#39;] &lt;- release
     
+    # The audiobook language
     language_selector &lt;- &#39;li.bc-list-item.languageLabel &gt; span&#39;
     language_node &lt;- html_node(item_node, language_selector)
     language &lt;- html_text(language_node, trim = TRUE)
     language &lt;- gsub(&#39;Language:\n\\s+&#39;, &#39;&#39;, language)
     data[row, &#39;Language&#39;] &lt;- language
     
+    # The number of stars received
     stars_selector &lt;- &#39;li.bc-list-item.ratingsLabel &gt; span.bc-text.bc-pub-offscreen&#39;
     stars_node &lt;- html_node(item_node, stars_selector)
     stars &lt;- html_text(stars_node, trim = TRUE)
     data[row, &#39;Stars&#39;] &lt;- stars
     
+    # The number of ratings received
     ratings_selector &lt;- &#39;li.bc-list-item.ratingsLabel &gt; span.bc-text.bc-size-small.bc-color-secondary&#39;
     ratings_node &lt;- html_node(item_node, ratings_selector)
     ratings &lt;- html_text(ratings_node, trim = TRUE)
     data[row, &#39;Ratings&#39;] &lt;- ratings
     
+    # The selling price
     price_selector &lt;- paste0(&#39;#buybox-regular-price-&#39;, item_num - 1, &#39; &gt; span:nth-child(2)&#39;)
     price_node &lt;- html_node(html, price_selector)
     price &lt;- html_text(price_node, trim = TRUE)
@@ -1753,21 +1768,18 @@ colnames(data) &lt;- cols</code></pre>
   }
 }</code></pre>
 </div>
-<div id="convert-data-into-dataframe" class="section level3">
-<h3>Convert data into dataframe</h3>
+<div id="create-and-view-the-dataframe" class="section level3">
+<h3>Create and view the dataframe</h3>
+<p>Convert the matrix into a dataframe.</p>
 <pre class="r"><code>df &lt;- as.data.frame(data)
-head(df, 10)</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Rank"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Title"],"name":[2],"type":["chr"],"align":["left"]},{"label":["Subtitle"],"name":[3],"type":["chr"],"align":["left"]},{"label":["Author"],"name":[4],"type":["chr"],"align":["left"]},{"label":["Narrator"],"name":[5],"type":["chr"],"align":["left"]},{"label":["Length"],"name":[6],"type":["chr"],"align":["left"]},{"label":["Release"],"name":[7],"type":["chr"],"align":["left"]},{"label":["Language"],"name":[8],"type":["chr"],"align":["left"]},{"label":["Stars"],"name":[9],"type":["chr"],"align":["left"]},{"label":["Ratings"],"name":[10],"type":["chr"],"align":["left"]},{"label":["Price"],"name":[11],"type":["chr"],"align":["left"]}],"data":[{"1":"1","2":"Greenlights","3":"NA","4":"Matthew McConaughey","5":"Matthew McConaughey","6":"6 hrs and 42 mins","7":"10-20-20","8":"English","9":"5 out of 5 stars","10":"6,814 ratings","11":"$28.00","_rn_":"1"},{"1":"2","2":"Tiny Habits","3":"The Small Changes That Change Everything","4":"BJ Fogg PhD","5":"BJ Fogg PhD","6":"11 hrs and 22 mins","7":"01-14-20","8":"English","9":"4.5 out of 5 stars","10":"740 ratings","11":"$34.95","_rn_":"2"},{"1":"3","2":"Clanlands","3":"Whisky, Warfare, and a Scottish Adventure Like No Other","4":"Sam Heughan, Graham McTavish, Diana Gabaldon - foreword","5":"Graham McTavish, Sam Heughan, Diana Gabaldon - foreword","6":"10 hrs and 22 mins","7":"11-03-20","8":"English","9":"5 out of 5 stars","10":"123 ratings","11":"$21.81","_rn_":"3"},{"1":"4","2":"A Time for Mercy","3":"A Jack Brigance Novel","4":"John Grisham","5":"Michael Beck","6":"19 hrs and 59 mins","7":"10-13-20","8":"English","9":"5 out of 5 stars","10":"3,436 ratings","11":"$31.50","_rn_":"4"},{"1":"5","2":"The Sentinel","3":"A Jack Reacher Novel","4":"Lee Child, Andrew Child","5":"Scott Brick","6":"10 hrs and 39 mins","7":"10-27-20","8":"English","9":"4.5 out of 5 stars","10":"1,303 ratings","11":"$31.50","_rn_":"5"},{"1":"6","2":"The Best of Me","3":"NA","4":"David Sedaris","5":"David Sedaris","6":"13 hrs and 8 mins","7":"11-03-20","8":"English","9":"3.5 out of 5 stars","10":"10 ratings","11":"$30.79","_rn_":"6"},{"1":"7","2":"Ready Player Two","3":"A Novel","4":"Ernest Cline","5":"Wil Wheaton","6":"16 hrs","7":"11-24-20","8":"English","9":"NA","10":"Not rated yet","11":"$35.00","_rn_":"7"},{"1":"8","2":"A Promised Land","3":"NA","4":"Barack Obama","5":"Barack Obama","6":"29 hrs and 10 mins","7":"11-17-20","8":"English","9":"NA","10":"Not rated yet","11":"$45.50","_rn_":"8"},{"1":"9","2":"Atomic Habits","3":"An Easy & Proven Way to Build Good Habits & Break Bad Ones","4":"James Clear","5":"James Clear","6":"5 hrs and 35 mins","7":"10-16-18","8":"English","9":"5 out of 5 stars","10":"47,015 ratings","11":"$28.00","_rn_":"9"},{"1":"10","2":"Fortune and Glory","3":"A Novel","4":"Janet Evanovich","5":"Lorelei King","6":"7 hrs and 13 mins","7":"11-03-20","8":"English","9":"4.5 out of 5 stars","10":"150 ratings","11":"$20.99","_rn_":"10"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
+View(df)</code></pre>
 </div>
-</div>
-<div id="save-dataframe-to-time-stamped-file" class="section level3">
-<h3>Save dataframe to time-stamped file</h3>
-<pre class="r"><code>filename &lt;- paste0(&#39;TopAudiobook-&#39;, format(Sys.time(), &#39;%Y%m%d-%H%M%S&#39;), &#39;.csv&#39;)
+<div id="save-dataframe-to-a-time-stamped-file" class="section level3">
+<h3>Save dataframe to a time-stamped file</h3>
+<p>The top 100 list might change from time to time. Or the web scraping might not work one day. Time-stamping helps to trace and save the changes.</p>
+<pre class="r"><code>filename &lt;- paste0(&#39;TopAudiobooks-&#39;, format(Sys.time(), &#39;%Y%m%d-%H%M%S&#39;), &#39;.csv&#39;)
 write.csv(df, filename, row.names = FALSE)</code></pre>
-<p>Now the data is ready for cleaning and analysis!</p>
+<p>Now the data is ready for further cleaning and analysis!</p>
 </div>
 
 

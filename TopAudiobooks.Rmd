@@ -7,15 +7,13 @@ output:
     df_print: paged
 ---
 
-Would you like to know the top 100 audiobooks on the Internet whenever you want? I would love to!
+Would you like to know what the top 100 audiobooks are whenever you want? I'm a big fan of audio books, having been a paying subscriber to Audible.com for many years.
 
-I'm a big fan of audio books, having been a paying subscriber to Audible.com for many years.
-
-In this R notebook, we will retrieve the current 100 bestsellers on Audible.com and save them into a dataframe.
-
-For this to work, 5 publicly available web pages are retrieved from Audible.com web site for further processing.
+Here, we will retrieve the current 100 bestsellers on Audible.com and save them into a dataframe. 5 publicly available web pages are retrieved from Audible.com web site for further processing.
 
 ### Import libraries
+
+Required for web scraping in R.
 
 ```{r}
 library(xml2)
@@ -24,12 +22,16 @@ library(rvest)
 
 ### Set number of pages and number of items per page
 
+We are going to retrieve 20 audiobooks from each of 5 pages.
+
 ```{r}
 pages <- 5
 items <- 20
 ```
 
 ### Set the data parameters
+
+There are 11 data fields to be retrieved. A matrix is used to store the data retrieved.
 
 ```{r}
 cols <- c('Rank', 'Title', 'Subtitle', 'Author', 'Narrator', 'Length', 'Release', 'Language', 'Stars', 'Ratings', 'Price')
@@ -39,69 +41,84 @@ colnames(data) <- cols
 
 ### Retrieve and process 100 items from 5 web pages
 
+Now we go to each page, extract the data, do some minimal cleaning, and put the them into the matrix.
+
 ```{r}
+# Loop through the pages
 for (page in 1:pages) {
   url <- paste0('https://www.audible.com/adblbestsellers?page=', page)
   html <- read_html(url)
 
+  # Loop through the items on a page
   for (item_num in 1:items) {
     row <- (page - 1) * items + item_num
 
     item_selector <- paste0('#product-list-a11y-skiplink-target > span > ul > div > li:nth-child(', item_num, ') > div > div.bc-col-responsive.bc-spacing-top-none.bc-col-8 > div > div.bc-col-responsive.bc-col-6 > div > div > span > ul')
     item_node <- html_node(html, item_selector)
 
+    # The audiobook ranking
     data[row, 'Rank'] <- row
     
+    # The audiobook title
     title_selector <- 'li:nth-child(1) > h3 > a'
     title_node <- html_node(item_node, title_selector)
     title <- html_text(title_node, trim = TRUE)
     data[row, 'Title'] <- title
 
+    # The audiobook subtitle. It's empty for some items.
     subtitle_selector <- 'li.bc-list-item.subtitle > span'
     subtitle_node <- html_node(item_node, subtitle_selector)
     subtitle <- html_text(subtitle_node, trim = TRUE)
     data[row, 'Subtitle'] <- subtitle
     
+    # The author. There might be more than one.
     author_selector <- 'li.bc-list-item.authorLabel > span > a'
     author_nodes <- html_nodes(item_node, author_selector)
     authors <- html_text(author_nodes, trim = TRUE)
     author <- paste(authors, collapse = ', ')
     data[row, 'Author'] <- author
     
+    # The narrator. There might be more than one.
     narrator_selector <- 'li.bc-list-item.narratorLabel > span > a'
     narrator_nodes <- html_nodes(item_node, narrator_selector)
     narrators <- html_text(narrator_nodes, trim = TRUE)
     narrator <- paste(narrators, collapse = ', ')
     data[row, 'Narrator'] <- narrator
     
+    # The audiobook length in hours and minutes
     length_selector <- 'li.bc-list-item.runtimeLabel > span'
     length_node <- html_node(item_node, length_selector)
     length <- html_text(length_node, trim = TRUE)
     length <- gsub('Length: ', '', length)
     data[row, 'Length'] <- length
-    
+
+    # The release date    
     release_selector <- 'li.bc-list-item.releaseDateLabel > span'
     release_node <- html_node(item_node, release_selector)
     release <- html_text(release_node, trim = TRUE)
     release <- gsub('Release date:\n\\s+', '', release)
     data[row, 'Release'] <- release
     
+    # The audiobook language
     language_selector <- 'li.bc-list-item.languageLabel > span'
     language_node <- html_node(item_node, language_selector)
     language <- html_text(language_node, trim = TRUE)
     language <- gsub('Language:\n\\s+', '', language)
     data[row, 'Language'] <- language
     
+    # The number of stars received
     stars_selector <- 'li.bc-list-item.ratingsLabel > span.bc-text.bc-pub-offscreen'
     stars_node <- html_node(item_node, stars_selector)
     stars <- html_text(stars_node, trim = TRUE)
     data[row, 'Stars'] <- stars
     
+    # The number of ratings received
     ratings_selector <- 'li.bc-list-item.ratingsLabel > span.bc-text.bc-size-small.bc-color-secondary'
     ratings_node <- html_node(item_node, ratings_selector)
     ratings <- html_text(ratings_node, trim = TRUE)
     data[row, 'Ratings'] <- ratings
     
+    # The selling price
     price_selector <- paste0('#buybox-regular-price-', item_num - 1, ' > span:nth-child(2)')
     price_node <- html_node(html, price_selector)
     price <- html_text(price_node, trim = TRUE)
@@ -110,18 +127,22 @@ for (page in 1:pages) {
 }
 ```
 
-### Convert data into dataframe
+### Create and view the dataframe
+
+Convert the matrix into a dataframe.
 
 ```{r}
 df <- as.data.frame(data)
-head(df, 10)
+View(df)
 ```
 
-### Save dataframe to time-stamped file
+### Save dataframe to a time-stamped file
+
+The top 100 list might change from time to time. Or the web scraping might not work one day. Time-stamping helps to trace and save the changes.
 
 ```{r}
 filename <- paste0('TopAudiobooks-', format(Sys.time(), '%Y%m%d-%H%M%S'), '.csv')
 write.csv(df, filename, row.names = FALSE)
 ```
 
-Now the data is ready for cleaning and analysis!
+Now the data is ready for further cleaning and analysis!
