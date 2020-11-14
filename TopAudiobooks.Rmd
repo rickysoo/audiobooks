@@ -4,8 +4,11 @@ author: "Soo Chee Kiong (17083991)"
 date: "November 6th, 2020"
 output:
   html_document:
-    df_print: paged
+    theme: readable
 ---
+
+GitHub - https://github.com/rickysoo/top_audiobooks  
+Contact - ricky [at] rickysoo.com
 
 Would you like to know what the top 100 audiobooks are whenever you want? I'm a big fan of audio books, having been a paying subscriber to Audible.com for many years.
 
