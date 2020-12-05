@@ -1,0 +1,62 @@
+---
+title: "Bestselling Audio Books"
+author: "Soo Chee Kiong, Ricky (17083991)"
+date: "December 5th, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+---
+
+**Shinyapps - [https://rickysoo.shinyapps.io/audiobooks](https://rickysoo.shinyapps.io/audiobooks)**
+
+Data source: [Audible.com](https://www.audible.com/adblbestsellers) (5th December 2020)
+
+
+```{r main, message=FALSE}
+library(shiny)
+library(shinythemes)
+library(dplyr)
+
+ui <- fluidPage(
+  theme = shinytheme('superhero'),
+  
+  h1('Bestselling Audio Books'),
+  HTML('<ol>'),
+  HTML('<li>Use the slider to choose the number of books to show.</li>'),
+  HTML('<li>Click the book title for book page on new tab.</li>'),
+  HTML('</ol>'),
+  hr(),
+  
+  sliderInput('Number', 'Number of bestsellers:',
+    min = 1, max = 100, value = 5, width = '100%'
+  ),
+  
+  tableOutput('audiobooks')
+)
+
+server<- function(input, output) {
+  load_df <- reactive({
+    data.file <- 'https://raw.githubusercontent.com/rickysoo/top_audiobooks/main/audiobooks-20201205.csv'
+    
+    df <- read.csv(data.file) %>%
+      mutate(Title = paste0('<a href="', URL, '" target="_blank">', Title, '</a>')) %>%
+      select(-Subtitle, -URL)
+    
+    return(df)
+  })
+
+  output$audiobooks <- renderTable(
+    {load_df <- load_df() %>% head(input$Number)},
+    bordered = TRUE,
+    striped = TRUE,
+    hover = TRUE,
+    sanitize.text.function = function(x) x
+  )
+}
+
+shinyApp(ui = ui, server = server)
+```
