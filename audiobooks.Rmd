@@ -1,64 +1,230 @@
 ---
-title: "Bestselling Audio Books"
-author: "Soo Chee Kiong, Ricky (17083991)"
-date: "3rd December 2020"
-output: html_document
-runtime: shiny
+title: "Top 100 Audiobooks"
+author: "Soo Chee Kiong (17083991)"
+date: "December 5th, 2020"
+output:
+  html_document:
+    theme: readable
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+GitHub - https://github.com/rickysoo  
+Contact - ricky [at] rickysoo.com
+
+![Source: https://www.pexels.com](audiobooks.jpg)
+
+Would you like to know what the top 100 audiobooks are whenever you want? I'm a big fan of audio books, having been a paying subscriber to Audible.com for many years.
+
+Here, we will retrieve the current 100 bestsellers on Audible.com and save them into a dataframe. 5 publicly available web pages are retrieved from Audible.com web site.
+
+### Import libraries
+
+Required for web scraping in R.
+
+```{r}
+library(xml2)
+library(rvest)
+library(dplyr)
+library(tidyr)
+library(stringr)
 ```
 
----
+### Set number of pages and number of items per page
 
-**Shinyapps - [https://rickysoo.shinyapps.io/audiobooks](https://rickysoo.shinyapps.io/audiobooks)**
+We are going to retrieve 20 audiobooks from each of 5 pages.
 
-Data source: [Audible.com](https://www.audible.com/adblbestsellers) (3rd December 2020)
+```{r}
+pages <- 5
+items <- 20
+```
 
+### Set the data parameters
 
-```{r main, message=FALSE}
-library(shiny)
-library(shinythemes)
-library(dplyr)
+There are 12 data fields to be retrieved. A matrix is used to store the data retrieved.
 
-ui <- fluidPage(
-  theme = shinytheme('superhero'),
-  
-  h1('Bestselling Audio Books'),
-  HTML('<ol>'),
-  HTML('<li>Use the slider to choose the number of books to show.</li>'),
-  HTML('<li>Click the book title for book page on new tab.</li>'),
-  HTML('</ol>'),
-  hr(),
-  
-  sliderInput('Number', 'Number of bestsellers:',
-    min = 1, max = 100, value = 5, width = '100%'
-  ),
-  
-  tableOutput('audiobooks')
-)
+```{r}
+cols <- c('Rank', 'Title', 'Subtitle', 'Author', 'Narrator', 'Length', 'Release', 'Language', 'Stars', 'Ratings', 'Price', 'URL')
+data <- matrix('', nrow = pages * items, ncol = length(cols))
+colnames(data) <- cols
+```
 
-server<- function(input, output) {
-  load_df <- reactive({
-    data.file <- 'https://raw.githubusercontent.com/rickysoo/top_audiobooks/main/audiobooks.csv'
+### Retrieve and process 100 items from 5 web pages
+
+Now we go to each page, extract the data, do some minimal cleaning, and put the them into the matrix.
+
+```{r}
+# Loop through the pages
+for (page in 1:pages) {
+  url <- paste0('https://www.audible.com/adblbestsellers?page=', page)
+  html <- read_html(url)
+
+  # Loop through the items on a page
+  for (item_num in 1:items) {
+    row <- (page - 1) * items + item_num
+
+    item_selector <- paste0('#product-list-a11y-skiplink-target > span > ul > div > li:nth-child(', item_num, ') > div > div.bc-col-responsive.bc-spacing-top-none.bc-col-8 > div > div.bc-col-responsive.bc-col-6 > div > div > span > ul')
+    item_node <- html_node(html, item_selector)
+
+    # The audiobook ranking
+    data[row, 'Rank'] <- row
     
-    df <- read.csv(data.file) %>%
-      mutate(Title = paste0('<a href="', URL, '" target="_blank">', Title, '</a>')) %>%
-      select(-Subtitle, -URL)
-    
-    return(df)
-  })
+    # The audiobook title
+    title_selector <- 'li:nth-child(1) > h3 > a'
+    title_node <- html_node(item_node, title_selector)
+    title <- html_text(title_node, trim = TRUE)
+    data[row, 'Title'] <- title
 
-  output$audiobooks <- renderTable({
-      load_df <- load_df() %>% head(input$Number)
-    },
-    bordered = TRUE,
-    striped = TRUE,
-    hover = TRUE,
-    sanitize.text.function = function(x) x
-  )
+    # The audiobook subtitle. It's empty for some items.
+    subtitle_selector <- 'li.bc-list-item.subtitle > span'
+    subtitle_node <- html_node(item_node, subtitle_selector)
+    subtitle <- html_text(subtitle_node, trim = TRUE)
+    data[row, 'Subtitle'] <- subtitle
+    
+    # The author. There might be more than one.
+    author_selector <- 'li.bc-list-item.authorLabel > span > a'
+    author_nodes <- html_nodes(item_node, author_selector)
+    authors <- html_text(author_nodes, trim = TRUE)
+    author <- paste(authors, collapse = ', ')
+    data[row, 'Author'] <- author
+    
+    # The narrator. There might be more than one.
+    narrator_selector <- 'li.bc-list-item.narratorLabel > span > a'
+    narrator_nodes <- html_nodes(item_node, narrator_selector)
+    narrators <- html_text(narrator_nodes, trim = TRUE)
+    narrator <- paste(narrators, collapse = ', ')
+    data[row, 'Narrator'] <- narrator
+    
+    # The audiobook length in hours and minutes
+    length_selector <- 'li.bc-list-item.runtimeLabel > span'
+    length_node <- html_node(item_node, length_selector)
+    length <- html_text(length_node, trim = TRUE)
+    length <- gsub('Length: ', '', length)
+    data[row, 'Length'] <- length
+
+    # The release date    
+    release_selector <- 'li.bc-list-item.releaseDateLabel > span'
+    release_node <- html_node(item_node, release_selector)
+    release <- html_text(release_node, trim = TRUE)
+    release <- gsub('Release date:\n\\s+', '', release)
+    data[row, 'Release'] <- release
+    
+    # The audiobook language
+    language_selector <- 'li.bc-list-item.languageLabel > span'
+    language_node <- html_node(item_node, language_selector)
+    language <- html_text(language_node, trim = TRUE)
+    language <- gsub('Language:\n\\s+', '', language)
+    data[row, 'Language'] <- language
+    
+    # The number of stars received
+    stars_selector <- 'li.bc-list-item.ratingsLabel > span.bc-text.bc-pub-offscreen'
+    stars_node <- html_node(item_node, stars_selector)
+    stars <- html_text(stars_node, trim = TRUE)
+    data[row, 'Stars'] <- stars
+    
+    # The number of ratings received
+    ratings_selector <- 'li.bc-list-item.ratingsLabel > span.bc-text.bc-size-small.bc-color-secondary'
+    ratings_node <- html_node(item_node, ratings_selector)
+    ratings <- html_text(ratings_node, trim = TRUE)
+    data[row, 'Ratings'] <- ratings
+    
+    # The selling price
+    price_selector <- paste0('#buybox-regular-price-', item_num - 1, ' > span:nth-child(2)')
+    price_node <- html_node(html, price_selector)
+    price <- html_text(price_node, trim = TRUE)
+    data[row, 'Price'] <- price
+    
+    # Web page address
+    url <- paste0('https://www.audible.com', html_attr(title_node, 'href'))
+    data[row, 'URL'] <- url
+  }
 }
+```
 
-shinyApp(ui = ui, server = server)
+### Create and view the dataframe
+
+Convert matrix into dataframe and show the first 10 rows.
+
+```{r}
+df <- as.data.frame(data)
+head(df, 10)
+View(df)
+```
+
+### Clean data
+
+Check data frame for missing values.
+
+```{r}
+sum(is.na(df))
+
+for (col in colnames(df)) {
+  print(paste0(col, ': ', sum(is.na(df[col]))))
+}
+```
+
+Subtitle - Replace missing values with empty space.
+
+```{r}
+df$Subtitle <- replace_na(df$Subtitle, '')
+```
+
+Length - Calculate length in minutes.
+
+```{r}
+Hours <- str_extract(df$Length, '^\\d+(?=(\\shr))') %>% as.numeric()
+Minutes <- str_extract(df$Length, '\\d+(?=(\\smin))') %>% replace_na(0) %>% as.numeric()
+df$Length <- Hours * 60 + Minutes
+```
+
+Release - Reformat value as date.
+
+```{r}
+df$Release <- as.Date(df$Release, '%m-%d-%y')
+```
+
+Stars - Extract the number of stars. Missing values are left as NAs.
+
+```{r}
+df$Stars <- str_extract(df$Stars, '^[\\d\\.]+')
+df$Stars <- as.numeric(df$Stars)
+```
+
+Stars - Extract the number of ratings. Missing values are left as NAs.
+
+```{r}
+df$Ratings <- gsub('Not rated yet', NA, df$Ratings)
+df$Ratings <- str_extract(df$Ratings, '^[\\d,]+')
+df$Ratings <- gsub(',', '', df$Ratings)
+df$Ratings <- as.numeric(df$Ratings)
+```
+
+Price - Reformat data as number.
+
+```{r}
+df$Price <- gsub('\\$', '', df$Price)
+df$Price <- as.numeric(df$Price)
+```
+
+Recheck data frame for missing values. Missing values in Stars and Ratings are left as NAs.
+
+```{r}
+sum(is.na(df))
+
+for (col in colnames(df)) {
+  print(paste0(col, ': ', sum(is.na(df[col]))))
+}
+```
+
+View the data frame.
+
+```{r}
+str(df)
+summary(df)
+View(df)
+```
+
+### Save dataframe
+
+```{r}
+filename <- paste0('audiobooks-', format(Sys.time(), '%Y%m%d'), '.csv')
+write.csv(df, filename, row.names = FALSE, fileEncoding = 'UTF-8')
 ```
