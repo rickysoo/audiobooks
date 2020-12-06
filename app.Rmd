@@ -20,8 +20,8 @@ Data source: [Audible.com](https://www.audible.com/adblbestsellers) (5th Decembe
 ```{r main, message=FALSE}
 library(shiny)
 library(shinythemes)
-library(dplyr)
 library(MASS)
+library(dplyr)
 
 ui <- fluidPage(
   theme = shinytheme('superhero'),
@@ -32,8 +32,8 @@ ui <- fluidPage(
 
   sliderInput(
     inputId = 'Number',
-    label = 'Select from 1 to 100:',
-    min = 1,
+    label = 'Select from 2 to 100:',
+    min = 2,
     max = 100,
     value = 20,
     width = '100%'
@@ -41,26 +41,31 @@ ui <- fluidPage(
   tabsetPanel(
     tabPanel('Books', tableOutput(outputId = 'books')),
     tabPanel('Length', plotOutput(outputId = 'length')),
-    tabPanel('Year', plotOutput(outputId = 'release')),
+    tabPanel('Year', plotOutput(outputId = 'year')),
     tabPanel('Ratings', plotOutput(outputId = 'ratings')),
     tabPanel('Stars', plotOutput(outputId = 'stars')),
-    tabPanel('Prices', plotOutput(outputId = 'price'))
+    tabPanel('Prices', plotOutput(outputId = 'price')),
+    tabPanel('Summary', verbatimTextOutput(outputId = 'summary'))
   )
 )
 
 server<- function(input, output) {
   load_df <- reactive({
-    data.file <- 'https://raw.githubusercontent.com/rickysoo/top_audiobooks/main/audiobooks-20201205.csv'
+    csv <- 'https://raw.githubusercontent.com/rickysoo/top_audiobooks/main/audiobooks-20201205.csv'
     
-    df <- read.csv(data.file) %>%
-      mutate(Title = paste0('<a href="', URL, '" target="_blank">', Title, '</a>')) %>%
-      dplyr::select(-Subtitle, -URL)
+    df <- read.csv(csv) %>%
+      mutate(
+        Title = paste0('<a href="', URL, '" target="_blank">', Title, '</a>'),
+        Length = Length / 60,
+        Year = substr(Release, 1, 4)
+      ) %>%
+      select(-Subtitle, -Release, -URL)
     
     return(df)
   })
 
   output$books <- renderTable(
-    {load_df <- load_df() %>% head(input$Number)},
+    load_df() %>% head(input$Number),
     bordered = TRUE,
     striped = TRUE,
     hover = TRUE,
@@ -69,7 +74,6 @@ server<- function(input, output) {
 
   output$length <- renderPlot({
     x <- load_df()[['Length']] %>% head(input$Number) %>% na.omit()
-    x <- x / 60
 
     hist.scott(x, prob = FALSE,
       col = '#75AADB',
@@ -77,10 +81,10 @@ server<- function(input, output) {
       main = 'Lengths of Audio Books')
   })
   
-  output$release <- renderPlot({
-    x <- load_df()[['Release']] %>% head(input$Number) %>% as.Date()
+  output$year <- renderPlot({
+    x <- load_df()[['Year']] %>% head(input$Number)
 
-    hist(x, breaks = 'years', format = '%Y', freq = TRUE,
+    barplot(table(x), 
       col = '#75AADB', 
       xlab = 'Release Year',
       main = 'Release Year of Audio Books')
@@ -98,7 +102,7 @@ server<- function(input, output) {
   output$stars <- renderPlot({
     x <- load_df()[['Stars']] %>% head(input$Number) %>% na.omit()
 
-    hist.scott(x, prob = FALSE, breaks = seq(0, 5, length.out = 11),
+    barplot(table(x), 
       col = '#75AADB',
       xlab = 'Number of Stars (out of 5 stars)',
       main = 'Number of Stars Received')
@@ -113,6 +117,12 @@ server<- function(input, output) {
       main = 'Retail Prices of Audio Books')
   })
   
+  output$summary <- renderPrint(
+    load_df() %>% 
+      head(input$Number) %>%
+      select(Length, Stars, Ratings, Price) %>%
+      summary()
+  )
 }
 
 shinyApp(ui = ui, server = server)
