@@ -12,15 +12,25 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ---
 
-**Shinyapps - [https://rickysoo.shinyapps.io/audiobooks](https://rickysoo.shinyapps.io/audiobooks)**
+**Shinyapps - https://rickysoo.shinyapps.io/audiobooks**
 
-Data source: [Audible.com](https://www.audible.com/adblbestsellers) (5th December 2020)
+GitHub - https://github.com/rickysoo  
+Contact - ricky [at] rickysoo.com
 
+### Introduction
+
+Choose the number of bestselling audio books to show. You can view the data, the graphs and a summary based on the audio books chosen. Scroll below the code and wait while it loads. Enjoy!
+
+The data collection and cleaning has been done in another project at https://rpubs.com/rickysoo/audiobooks
+
+The data is from Audible web site at https://www.audible.com/adblbestsellers (5th December 2020).
+
+### R Code
 
 ```{r main, message=FALSE}
 library(shiny)
 library(shinythemes)
-library(MASS)
+library(MASS) # For automatically-binned histogram function hist.scott()
 library(dplyr)
 
 ui <- fluidPage(
@@ -28,8 +38,9 @@ ui <- fluidPage(
   
   titlePanel('Bestselling Audio Books'),
   hr(),
-  h3('Choose the number of audio books to show'),
+  h3('Move the slider to choose the number of audio books'),
 
+  # Input panel with slider
   sliderInput(
     inputId = 'Number',
     label = 'Select from 2 to 100:',
@@ -38,6 +49,8 @@ ui <- fluidPage(
     value = 20,
     width = '100%'
   ),
+
+  # Output panel with 7 tabs
   tabsetPanel(
     tabPanel('Books', tableOutput(outputId = 'books')),
     tabPanel('Length', plotOutput(outputId = 'length')),
@@ -50,6 +63,7 @@ ui <- fluidPage(
 )
 
 server<- function(input, output) {
+  # Load all data once
   load_df <- reactive({
     csv <- 'https://raw.githubusercontent.com/rickysoo/top_audiobooks/main/audiobooks-20201205.csv'
     
@@ -64,6 +78,7 @@ server<- function(input, output) {
     return(df)
   })
 
+  # Show data in a table with hyperlinks
   output$books <- renderTable(
     load_df() %>% head(input$Number),
     bordered = TRUE,
@@ -72,8 +87,9 @@ server<- function(input, output) {
     sanitize.text.function = function(x) x
   )
 
+  # Show the lengths of audio books in hours
   output$length <- renderPlot({
-    x <- load_df()[['Length']] %>% head(input$Number) %>% na.omit()
+    x <- load_df()$Length %>% head(input$Number) %>% na.omit()
 
     hist.scott(x, prob = FALSE,
       col = '#75AADB',
@@ -81,8 +97,9 @@ server<- function(input, output) {
       main = 'Lengths of Audio Books')
   })
   
+  # Show the release year of audio books
   output$year <- renderPlot({
-    x <- load_df()[['Year']] %>% head(input$Number)
+    x <- load_df()$Year %>% head(input$Number)
 
     barplot(table(x), 
       col = '#75AADB', 
@@ -90,8 +107,9 @@ server<- function(input, output) {
       main = 'Release Year of Audio Books')
   })
   
+  # Show the number of ratings received
   output$ratings <- renderPlot({
-    x <- load_df()[['Ratings']] %>% head(input$Number) %>% na.omit()
+    x <- load_df()$Ratings %>% head(input$Number) %>% na.omit()
 
     hist.scott(x, prob = FALSE,
       col = '#75AADB',
@@ -99,8 +117,9 @@ server<- function(input, output) {
       main = 'Number of Ratings Received')
   })
   
+  # Show the number of stars received
   output$stars <- renderPlot({
-    x <- load_df()[['Stars']] %>% head(input$Number) %>% na.omit()
+    x <- load_df()$Stars %>% head(input$Number) %>% na.omit()
 
     barplot(table(x), 
       col = '#75AADB',
@@ -108,8 +127,9 @@ server<- function(input, output) {
       main = 'Number of Stars Received')
   })
   
+  # Show the prices of audio books
   output$price <- renderPlot({
-    x <- load_df()[['Price']] %>% head(input$Number) %>% na.omit()
+    x <- load_df()$Price %>% head(input$Number) %>% na.omit()
 
     hist.scott(x, prob = FALSE,
       col = '#75AADB',
@@ -117,6 +137,7 @@ server<- function(input, output) {
       main = 'Retail Prices of Audio Books')
   })
   
+  # Show a summary of audio books
   output$summary <- renderPrint(
     load_df() %>% 
       head(input$Number) %>%
