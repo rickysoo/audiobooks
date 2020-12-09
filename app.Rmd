@@ -30,7 +30,6 @@ The data is from Audible web site at https://www.audible.com/adblbestsellers (5t
 ```{r main, message=FALSE}
 library(shiny)
 library(shinythemes)
-library(MASS) # For automatically-binned histogram function hist.scott()
 library(dplyr)
 
 ui <- fluidPage(
@@ -91,7 +90,7 @@ server<- function(input, output) {
   output$length <- renderPlot({
     x <- load_df()$Length %>% head(input$Number) %>% na.omit()
 
-    hist.scott(x, prob = FALSE,
+    hist(x, breaks = 'sturges',
       col = '#75AADB',
       xlab = 'Hours',
       main = 'Lengths of Audio Books')
@@ -111,7 +110,7 @@ server<- function(input, output) {
   output$ratings <- renderPlot({
     x <- load_df()$Ratings %>% head(input$Number) %>% na.omit()
 
-    hist.scott(x, prob = FALSE,
+    hist(x, breaks = 'sturges',
       col = '#75AADB',
       xlab = 'Number of Ratings',
       main = 'Number of Ratings Received')
@@ -131,7 +130,7 @@ server<- function(input, output) {
   output$price <- renderPlot({
     x <- load_df()$Price %>% head(input$Number) %>% na.omit()
 
-    hist.scott(x, prob = FALSE,
+    hist(x, breaks = 'sturges',
       col = '#75AADB',
       xlab = 'Retail Price (US$)',
       main = 'Retail Prices of Audio Books')
