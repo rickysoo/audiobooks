@@ -1,6 +1,6 @@
 ---
 title: "Top 100 Audiobooks"
-author: "Soo Chee Kiong (17083991)"
+author: "Soo Chee Kiong, Ricky (17083991)"
 date: "December 5th, 2020"
 output:
   html_document:
@@ -23,9 +23,7 @@ Required for web scraping in R.
 ```{r}
 library(xml2)
 library(rvest)
-library(dplyr)
-library(tidyr)
-library(stringr)
+library(tidyverse)
 ```
 
 ### Set number of pages and number of items per page
@@ -149,6 +147,13 @@ head(df, 10)
 View(df)
 ```
 
+### Save the raw data
+
+```{r}
+filename <- paste0('audiobooks-original-', format(Sys.time(), '%Y%m%d'), '.csv')
+write.csv(df, filename, row.names = FALSE, fileEncoding = 'UTF-8')
+```
+
 ### Clean data
 
 Check data frame for missing values.
@@ -222,9 +227,9 @@ summary(df)
 View(df)
 ```
 
-### Save dataframe
+### Save the cleaned data
 
 ```{r}
-filename <- paste0('audiobooks-', format(Sys.time(), '%Y%m%d'), '.csv')
+filename <- paste0('audiobooks-cleaned-', format(Sys.time(), '%Y%m%d'), '.csv')
 write.csv(df, filename, row.names = FALSE, fileEncoding = 'UTF-8')
 ```

@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Soo Chee Kiong (17083991)" />
+<meta name="author" content="Soo Chee Kiong, Ricky (17083991)" />
 
 
 <title>Top 100 Audiobooks</title>
@@ -397,7 +397,7 @@ summary {
 
 
 <h1 class="title toc-ignore">Top 100 Audiobooks</h1>
-<h4 class="author">Soo Chee Kiong (17083991)</h4>
+<h4 class="author">Soo Chee Kiong, Ricky (17083991)</h4>
 <h4 class="date">December 5th, 2020</h4>
 
 </div>
@@ -416,17 +416,17 @@ Contact - ricky [at] rickysoo.com</p>
 <p>Required for web scraping in R.</p>
 <pre class="r"><code>library(xml2)
 library(rvest)
-library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(tidyr)
-library(stringr)</code></pre>
+library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.3.2     v purrr   0.3.4
+## v tibble  3.0.4     v dplyr   1.0.2
+## v tidyr   1.1.2     v stringr 1.4.0
+## v readr   1.4.0     v forcats 0.5.0</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter()         masks stats::filter()
+## x readr::guess_encoding() masks rvest::guess_encoding()
+## x dplyr::lag()            masks stats::lag()
+## x purrr::pluck()          masks rvest::pluck()</code></pre>
 </div>
 <div id="set-number-of-pages-and-number-of-items-per-page" class="section level3">
 <h3>Set number of pages and number of items per page</h3>
@@ -537,71 +537,65 @@ for (page in 1:pages) {
 head(df, 10)</code></pre>
 <pre><code>##    Rank                     Title
 ## 1     1           A Promised Land
-## 2     2          Ready Player Two
+## 2     2          Washington&#39;s End
 ## 3     3               Greenlights
-## 4     4 Caste (Oprah&#39;s Book Club)
-## 5     5   A Guy Walks into My Bar
-## 6     6           The Pagan World
+## 4     4          Ready Player Two
+## 5     5             Atomic Habits
+## 6     6           A Killer&#39;s Wife
 ## 7     7             Rhythm of War
-## 8     8             Atomic Habits
-## 9     9        The Vanishing Half
-## 10   10             Can&#39;t Hurt Me
+## 8     8                The Tribes
+## 9     9             Can&#39;t Hurt Me
+## 10   10 Caste (Oprah&#39;s Book Club)
 ##                                                      Subtitle
 ## 1                                                        &lt;NA&gt;
-## 2                                                     A Novel
+## 2                      The Final Years and Forgotten Struggle
 ## 3                                                        &lt;NA&gt;
-## 4                              The Origins of Our Discontents
-## 5                                                        &lt;NA&gt;
-## 6                       Ancient Religions Before Christianity
+## 4                                                     A Novel
+## 5  An Easy &amp; Proven Way to Build Good Habits &amp; Break Bad Ones
+## 6                                       Desert Plains, Book 1
 ## 7                              The Stormlight Archive, Book 4
-## 8  An Easy &amp; Proven Way to Build Good Habits &amp; Break Bad Ones
-## 9                                                     A Novel
-## 10                         Master Your Mind and Defy the Odds
-##                                       Author                         Narrator
-## 1                               Barack Obama                     Barack Obama
-## 2                               Ernest Cline                      Wil Wheaton
-## 3                        Matthew McConaughey              Matthew McConaughey
-## 4                           Isabel Wilkerson                      Robin Miles
-## 5                             Lauren Blakely Shane East, Joe Arden, Full Cast
-## 6  Hans-Friedrich Mueller, The Great Courses           Hans-Friedrich Mueller
-## 7                          Brandon Sanderson     Kate Reading, Michael Kramer
-## 8                                James Clear                      James Clear
-## 9                               Brit Bennett                     Shayna Small
-## 10                             David Goggins     David Goggins, Adam Skolnick
-##                Length  Release Language              Stars         Ratings
-## 1  29 hrs and 10 mins 11-17-20  English   5 out of 5 stars   2,704 ratings
-## 2  13 hrs and 46 mins 11-24-20  English 4.5 out of 5 stars   8,065 ratings
-## 3   6 hrs and 42 mins 10-20-20  English   5 out of 5 stars  20,717 ratings
-## 4  14 hrs and 26 mins 08-04-20  English   5 out of 5 stars   5,236 ratings
-## 5  10 hrs and 26 mins 08-17-20  English 4.5 out of 5 stars   1,394 ratings
-## 6  12 hrs and 34 mins 02-28-20  English 4.5 out of 5 stars     354 ratings
-## 7  57 hrs and 26 mins 11-17-20  English   5 out of 5 stars   3,384 ratings
-## 8   5 hrs and 35 mins 10-16-18  English   5 out of 5 stars  48,627 ratings
-## 9  11 hrs and 34 mins 06-02-20  English 4.5 out of 5 stars   7,850 ratings
-## 10 13 hrs and 37 mins 11-28-18  English   5 out of 5 stars 117,109 ratings
-##     Price
-## 1  $45.50
-## 2  $31.50
-## 3  $28.00
-## 4  $31.50
-## 5  $24.95
-## 6  $34.95
-## 7  $66.49
-## 8  $28.00
-## 9  $31.50
-## 10 $24.95
+## 8                                                     A Novel
+## 9                          Master Your Mind and Defy the Odds
+## 10                             The Origins of Our Discontents
+##                 Author                      Narrator             Length
+## 1         Barack Obama                  Barack Obama 29 hrs and 10 mins
+## 2        Jonathan Horn                  Arthur Morey  8 hrs and 14 mins
+## 3  Matthew McConaughey           Matthew McConaughey  6 hrs and 42 mins
+## 4         Ernest Cline                   Wil Wheaton 13 hrs and 46 mins
+## 5          James Clear                   James Clear  5 hrs and 35 mins
+## 6        Victor Methos             Brittany Pressley  9 hrs and 21 mins
+## 7    Brandon Sanderson  Kate Reading, Michael Kramer 57 hrs and 26 mins
+## 8           Mari Howes Barrie Kreinik, Piper Goodeve 11 hrs and 48 mins
+## 9        David Goggins  David Goggins, Adam Skolnick 13 hrs and 37 mins
+## 10    Isabel Wilkerson                   Robin Miles 14 hrs and 26 mins
+##     Release Language              Stars         Ratings  Price
+## 1  11-17-20  English   5 out of 5 stars   4,676 ratings $45.50
+## 2  02-11-20  English 4.5 out of 5 stars      33 ratings $17.00
+## 3  10-20-20  English   5 out of 5 stars  23,359 ratings $28.00
+## 4  11-24-20  English 4.5 out of 5 stars  13,169 ratings $31.50
+## 5  10-16-18  English   5 out of 5 stars  49,078 ratings $28.00
+## 6  03-01-20  English 4.5 out of 5 stars   3,204 ratings $25.19
+## 7  11-17-20  English   5 out of 5 stars   5,161 ratings $66.49
+## 8  12-10-20  English 4.5 out of 5 stars      25 ratings $34.95
+## 9  11-28-18  English   5 out of 5 stars 117,784 ratings $24.95
+## 10 08-04-20  English   5 out of 5 stars   5,530 ratings $31.50
 ##                                                                                                                                                                                  URL
-## 1          https://www.audible.com/pd/A-Promised-Land-Audiobook/0525633723?ref=a_adblbests_c3_lProduct_1_1&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=2GCF70661DCBS13X5ST4
-## 2         https://www.audible.com/pd/Ready-Player-Two-Audiobook/0593396960?ref=a_adblbests_c3_lProduct_1_2&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=2GCF70661DCBS13X5ST4
-## 3              https://www.audible.com/pd/Greenlights-Audiobook/0593294181?ref=a_adblbests_c3_lProduct_1_3&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=2GCF70661DCBS13X5ST4
-## 4   https://www.audible.com/pd/Caste-Oprahs-Book-Club-Audiobook/0593339800?ref=a_adblbests_c3_lProduct_1_4&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=2GCF70661DCBS13X5ST4
-## 5  https://www.audible.com/pd/A-Guy-Walks-into-My-Bar-Audiobook/B08BTLV158?ref=a_adblbests_c3_lProduct_1_5&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=2GCF70661DCBS13X5ST4
-## 6          https://www.audible.com/pd/The-Pagan-World-Audiobook/1629978590?ref=a_adblbests_c3_lProduct_1_6&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=2GCF70661DCBS13X5ST4
-## 7            https://www.audible.com/pd/Rhythm-of-War-Audiobook/1250759781?ref=a_adblbests_c3_lProduct_1_7&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=2GCF70661DCBS13X5ST4
-## 8            https://www.audible.com/pd/Atomic-Habits-Audiobook/1524779261?ref=a_adblbests_c3_lProduct_1_8&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=2GCF70661DCBS13X5ST4
-## 9       https://www.audible.com/pd/The-Vanishing-Half-Audiobook/0525637141?ref=a_adblbests_c3_lProduct_1_9&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=2GCF70661DCBS13X5ST4
-## 10           https://www.audible.com/pd/Cant-Hurt-Me-Audiobook/B07KKMNZCH?ref=a_adblbests_c3_lProduct_1_10&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=2GCF70661DCBS13X5ST4</code></pre>
+## 1          https://www.audible.com/pd/A-Promised-Land-Audiobook/0525633723?ref=a_adblbests_c3_lProduct_1_1&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=FHGFT2DZGSYYEYZH51EP
+## 2          https://www.audible.com/pd/Washingtons-End-Audiobook/1797111051?ref=a_adblbests_c3_lProduct_1_2&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=FHGFT2DZGSYYEYZH51EP
+## 3              https://www.audible.com/pd/Greenlights-Audiobook/0593294181?ref=a_adblbests_c3_lProduct_1_3&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=FHGFT2DZGSYYEYZH51EP
+## 4         https://www.audible.com/pd/Ready-Player-Two-Audiobook/0593396960?ref=a_adblbests_c3_lProduct_1_4&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=FHGFT2DZGSYYEYZH51EP
+## 5            https://www.audible.com/pd/Atomic-Habits-Audiobook/1524779261?ref=a_adblbests_c3_lProduct_1_5&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=FHGFT2DZGSYYEYZH51EP
+## 6           https://www.audible.com/pd/A-Killers-Wife-Audiobook/179975006X?ref=a_adblbests_c3_lProduct_1_6&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=FHGFT2DZGSYYEYZH51EP
+## 7            https://www.audible.com/pd/Rhythm-of-War-Audiobook/1250759781?ref=a_adblbests_c3_lProduct_1_7&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=FHGFT2DZGSYYEYZH51EP
+## 8               https://www.audible.com/pd/The-Tribes-Audiobook/B08K3J3294?ref=a_adblbests_c3_lProduct_1_8&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=FHGFT2DZGSYYEYZH51EP
+## 9             https://www.audible.com/pd/Cant-Hurt-Me-Audiobook/B07KKMNZCH?ref=a_adblbests_c3_lProduct_1_9&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=FHGFT2DZGSYYEYZH51EP
+## 10 https://www.audible.com/pd/Caste-Oprahs-Book-Club-Audiobook/0593339800?ref=a_adblbests_c3_lProduct_1_10&amp;pf_rd_p=4100380b-3e9d-4594-990a-9c93d1a8dac3&amp;pf_rd_r=FHGFT2DZGSYYEYZH51EP</code></pre>
 <pre class="r"><code>View(df)</code></pre>
+</div>
+<div id="save-the-raw-data" class="section level3">
+<h3>Save the raw data</h3>
+<pre class="r"><code>filename &lt;- paste0(&#39;audiobooks-original-&#39;, format(Sys.time(), &#39;%Y%m%d&#39;), &#39;.csv&#39;)
+write.csv(df, filename, row.names = FALSE, fileEncoding = &#39;UTF-8&#39;)</code></pre>
 </div>
 <div id="clean-data" class="section level3">
 <h3>Clean data</h3>
@@ -613,13 +607,13 @@ head(df, 10)</code></pre>
 }</code></pre>
 <pre><code>## [1] &quot;Rank: 0&quot;
 ## [1] &quot;Title: 0&quot;
-## [1] &quot;Subtitle: 38&quot;
+## [1] &quot;Subtitle: 40&quot;
 ## [1] &quot;Author: 0&quot;
 ## [1] &quot;Narrator: 0&quot;
 ## [1] &quot;Length: 0&quot;
 ## [1] &quot;Release: 0&quot;
 ## [1] &quot;Language: 0&quot;
-## [1] &quot;Stars: 3&quot;
+## [1] &quot;Stars: 1&quot;
 ## [1] &quot;Ratings: 0&quot;
 ## [1] &quot;Price: 0&quot;
 ## [1] &quot;URL: 0&quot;</code></pre>
@@ -644,7 +638,7 @@ df$Ratings &lt;- as.numeric(df$Ratings)</code></pre>
 df$Price &lt;- as.numeric(df$Price)</code></pre>
 <p>Recheck data frame for missing values. Missing values in Stars and Ratings are left as NAs.</p>
 <pre class="r"><code>sum(is.na(df))</code></pre>
-<pre><code>## [1] 6</code></pre>
+<pre><code>## [1] 2</code></pre>
 <pre class="r"><code>for (col in colnames(df)) {
   print(paste0(col, &#39;: &#39;, sum(is.na(df[col]))))
 }</code></pre>
@@ -656,25 +650,25 @@ df$Price &lt;- as.numeric(df$Price)</code></pre>
 ## [1] &quot;Length: 0&quot;
 ## [1] &quot;Release: 0&quot;
 ## [1] &quot;Language: 0&quot;
-## [1] &quot;Stars: 3&quot;
-## [1] &quot;Ratings: 3&quot;
+## [1] &quot;Stars: 1&quot;
+## [1] &quot;Ratings: 1&quot;
 ## [1] &quot;Price: 0&quot;
 ## [1] &quot;URL: 0&quot;</code></pre>
 <p>View the data frame.</p>
 <pre class="r"><code>str(df)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    100 obs. of  12 variables:
 ##  $ Rank    : chr  &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ Title   : chr  &quot;A Promised Land&quot; &quot;Ready Player Two&quot; &quot;Greenlights&quot; &quot;Caste (Oprah&#39;s Book Club)&quot; ...
-##  $ Subtitle: chr  &quot;&quot; &quot;A Novel&quot; &quot;&quot; &quot;The Origins of Our Discontents&quot; ...
-##  $ Author  : chr  &quot;Barack Obama&quot; &quot;Ernest Cline&quot; &quot;Matthew McConaughey&quot; &quot;Isabel Wilkerson&quot; ...
-##  $ Narrator: chr  &quot;Barack Obama&quot; &quot;Wil Wheaton&quot; &quot;Matthew McConaughey&quot; &quot;Robin Miles&quot; ...
-##  $ Length  : num  1750 826 402 866 626 ...
-##  $ Release : Date, format: &quot;2020-11-17&quot; &quot;2020-11-24&quot; ...
+##  $ Title   : chr  &quot;A Promised Land&quot; &quot;Washington&#39;s End&quot; &quot;Greenlights&quot; &quot;Ready Player Two&quot; ...
+##  $ Subtitle: chr  &quot;&quot; &quot;The Final Years and Forgotten Struggle&quot; &quot;&quot; &quot;A Novel&quot; ...
+##  $ Author  : chr  &quot;Barack Obama&quot; &quot;Jonathan Horn&quot; &quot;Matthew McConaughey&quot; &quot;Ernest Cline&quot; ...
+##  $ Narrator: chr  &quot;Barack Obama&quot; &quot;Arthur Morey&quot; &quot;Matthew McConaughey&quot; &quot;Wil Wheaton&quot; ...
+##  $ Length  : num  1750 494 402 826 335 ...
+##  $ Release : Date, format: &quot;2020-11-17&quot; &quot;2020-02-11&quot; ...
 ##  $ Language: chr  &quot;English&quot; &quot;English&quot; &quot;English&quot; &quot;English&quot; ...
-##  $ Stars   : num  5 4.5 5 5 4.5 4.5 5 5 4.5 5 ...
-##  $ Ratings : num  2704 8065 20717 5236 1394 ...
-##  $ Price   : num  45.5 31.5 28 31.5 24.9 ...
-##  $ URL     : chr  &quot;https://www.audible.com/pd/A-Promised-Land-Audiobook/0525633723?ref=a_adblbests_c3_lProduct_1_1&amp;pf_rd_p=4100380&quot;| __truncated__ &quot;https://www.audible.com/pd/Ready-Player-Two-Audiobook/0593396960?ref=a_adblbests_c3_lProduct_1_2&amp;pf_rd_p=410038&quot;| __truncated__ &quot;https://www.audible.com/pd/Greenlights-Audiobook/0593294181?ref=a_adblbests_c3_lProduct_1_3&amp;pf_rd_p=4100380b-3e&quot;| __truncated__ &quot;https://www.audible.com/pd/Caste-Oprahs-Book-Club-Audiobook/0593339800?ref=a_adblbests_c3_lProduct_1_4&amp;pf_rd_p=&quot;| __truncated__ ...</code></pre>
+##  $ Stars   : num  5 4.5 5 4.5 5 4.5 5 4.5 5 5 ...
+##  $ Ratings : num  4676 33 23359 13169 49078 ...
+##  $ Price   : num  45.5 17 28 31.5 28 ...
+##  $ URL     : chr  &quot;https://www.audible.com/pd/A-Promised-Land-Audiobook/0525633723?ref=a_adblbests_c3_lProduct_1_1&amp;pf_rd_p=4100380&quot;| __truncated__ &quot;https://www.audible.com/pd/Washingtons-End-Audiobook/1797111051?ref=a_adblbests_c3_lProduct_1_2&amp;pf_rd_p=4100380&quot;| __truncated__ &quot;https://www.audible.com/pd/Greenlights-Audiobook/0593294181?ref=a_adblbests_c3_lProduct_1_3&amp;pf_rd_p=4100380b-3e&quot;| __truncated__ &quot;https://www.audible.com/pd/Ready-Player-Two-Audiobook/0593396960?ref=a_adblbests_c3_lProduct_1_4&amp;pf_rd_p=410038&quot;| __truncated__ ...</code></pre>
 <pre class="r"><code>summary(df)</code></pre>
 <pre><code>##      Rank              Title             Subtitle            Author         
 ##  Length:100         Length:100         Length:100         Length:100        
@@ -686,25 +680,25 @@ df$Price &lt;- as.numeric(df$Price)</code></pre>
 ##                                                                             
 ##    Narrator             Length          Release             Language        
 ##  Length:100         Min.   :  95.0   Min.   :2000-12-31   Length:100        
-##  Class :character   1st Qu.: 482.5   1st Qu.:2015-11-20   Class :character  
-##  Mode  :character   Median : 685.5   Median :2020-03-06   Mode  :character  
-##                     Mean   : 836.1   Mean   :2017-05-14                     
-##                     3rd Qu.:1000.8   3rd Qu.:2020-10-06                     
-##                     Max.   :3446.0   Max.   :2021-03-02                     
+##  Class :character   1st Qu.: 517.0   1st Qu.:2015-11-12   Class :character  
+##  Mode  :character   Median : 715.0   Median :2019-02-26   Mode  :character  
+##                     Mean   : 885.3   Mean   :2016-12-27                     
+##                     3rd Qu.:1006.5   3rd Qu.:2020-09-29                     
+##                     Max.   :3446.0   Max.   :2020-12-15                     
 ##                                                                             
 ##      Stars          Ratings           Price           URL           
-##  Min.   :4.500   Min.   :     9   Min.   :14.95   Length:100        
-##  1st Qu.:4.500   1st Qu.:  2335   1st Qu.:24.50   Class :character  
-##  Median :4.500   Median : 15639   Median :30.39   Mode  :character  
-##  Mean   :4.732   Mean   : 35369   Mean   :31.26                     
-##  3rd Qu.:5.000   3rd Qu.: 54972   3rd Qu.:34.95                     
-##  Max.   :5.000   Max.   :234185   Max.   :66.49                     
-##  NA&#39;s   :3       NA&#39;s   :3</code></pre>
+##  Min.   :4.500   Min.   :    25   Min.   :14.95   Length:100        
+##  1st Qu.:4.500   1st Qu.:  3533   1st Qu.:24.98   Class :character  
+##  Median :4.500   Median : 20466   Median :30.79   Mode  :character  
+##  Mean   :4.707   Mean   : 36604   Mean   :32.36                     
+##  3rd Qu.:5.000   3rd Qu.: 53466   3rd Qu.:34.99                     
+##  Max.   :5.000   Max.   :234727   Max.   :66.49                     
+##  NA&#39;s   :1       NA&#39;s   :1</code></pre>
 <pre class="r"><code>View(df)</code></pre>
 </div>
-<div id="save-dataframe" class="section level3">
-<h3>Save dataframe</h3>
-<pre class="r"><code>filename &lt;- paste0(&#39;audiobooks-&#39;, format(Sys.time(), &#39;%Y%m%d&#39;), &#39;.csv&#39;)
+<div id="save-the-cleaned-data" class="section level3">
+<h3>Save the cleaned data</h3>
+<pre class="r"><code>filename &lt;- paste0(&#39;audiobooks-cleaned-&#39;, format(Sys.time(), &#39;%Y%m%d&#39;), &#39;.csv&#39;)
 write.csv(df, filename, row.names = FALSE, fileEncoding = &#39;UTF-8&#39;)</code></pre>
 </div>
 
