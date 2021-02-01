@@ -8,3 +8,6 @@ Shinyapps - https://rickysoo.shinyapps.io/audiobooks
 Machine learning using Python to build a model to classify and predict popular audiobooks:  
 https://github.com/rickysoo/audiobooks/blob/main/MachineLearning.ipynb  
 https://nbviewer.jupyter.org/github/rickysoo/audiobooks/blob/main/MachineLearning.ipynb
+
+Classifying and predicting popular audibooks using logistic regression:  
+https://rpubs.com/rickysoo/audiobooks_logistic
