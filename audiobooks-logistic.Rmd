@@ -23,6 +23,7 @@ Load libraries
 library(ggplot2)
 library(dplyr)
 library(caret)
+library(broom)
 ```
 
 Load audiobook data.
@@ -31,6 +32,7 @@ Load audiobook data.
 set.seed(88)
 
 audible <- read.csv('audible_cleaned.csv')
+# audible <- audible %>% sample_n(1000)
 audible$Popular <- factor(audible$Popular)
 ```
 
@@ -87,6 +89,7 @@ audible$DaysReleasedLog <- log(max(audible$DaysReleased) + 1 - audible$DaysRelea
 ggplot(audible, aes(x = DaysReleasedLog, fill = Popular)) +
     geom_histogram(bins = 30)
 ```
+
 Explore *Category* using bar plot. Self-development books are found to have a high proportion of popular books. A new variable *SelfDevelopment* is added to possibly capture this pattern in model training.
 
 ```{r}
@@ -132,11 +135,16 @@ Check the classification matrix.
 
 ```{r}
 test_popular <- as.factor(test_popular)
-confusionMatrix(test_popular, test.data$Popular, positive = '1')
+CM <- confusionMatrix(test_popular, test.data$Popular, positive = '1')
+fourfoldplot(CM$table)
+```
+
+```{r}
 table(test_popular, test.data$Popular)
 prop.table(table(test_popular, test.data$Popular))
 ```
-## Save Model & Data
+
+## Save Model
 
 Make prediction on all audiobooks.
 
@@ -148,7 +156,11 @@ accuracy
 ```
 ```{r}
 audible$Predicted <- as.factor(audible$Predicted)
-confusionMatrix(audible$Predicted, audible$Popular, positive = '1')
+CM <- confusionMatrix(audible$Predicted, audible$Popular, positive = '1')
+fourfoldplot(CM$table)
+```
+
+```{r}
 table(audible$Predicted, audible$Popular)
 prop.table(table(audible$Predicted, audible$Popular))
 ```
