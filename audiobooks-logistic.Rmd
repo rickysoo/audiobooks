@@ -135,8 +135,19 @@ Check the classification matrix.
 
 ```{r}
 test_popular <- as.factor(test_popular)
-CM <- confusionMatrix(test_popular, test.data$Popular, positive = '1')
-fourfoldplot(CM$table)
+CM_test <- confusionMatrix(test_popular, test.data$Popular, positive = '1')
+CM_test
+```
+```{r}
+fourfoldplot(CM_test$table)
+```
+
+Show the performance metrics.
+
+```{r}
+CM_test$overall['Accuracy']
+CM_test$byClass['Precision']
+CM_test$byClass['Recall']
 ```
 
 ```{r}
@@ -157,7 +168,18 @@ accuracy
 ```{r}
 audible$Predicted <- as.factor(audible$Predicted)
 CM <- confusionMatrix(audible$Predicted, audible$Popular, positive = '1')
+CM
+```
+
+```{r}
 fourfoldplot(CM$table)
+```
+Show the performance metrics.
+
+```{r}
+CM$overall['Accuracy']
+CM$byClass['Precision']
+CM$byClass['Recall']
 ```
 
 ```{r}
