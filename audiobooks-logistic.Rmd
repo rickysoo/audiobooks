@@ -1,0 +1,159 @@
+---
+title: "Classifying Popular Audiobooks with Logistic Regression in R"
+author: "Ricky Soo"
+date: "1st February 2021"
+output:
+  html_document:
+    theme: readable
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+---
+
+GitHub - <a href="https://github.com/rickysoo/audiobooks" target="_blank">https://github.com/rickysoo/audiobooks</a>
+
+## Introduction
+
+In this exercise, we are going to classify and predict popular audiobooks on Audible.com. The data has previously been sourced and cleaned in this project.
+
+Load libraries
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(caret)
+```
+
+Load audiobook data.
+
+```{r}
+set.seed(88)
+
+audible <- read.csv('audible_cleaned.csv')
+audible$Popular <- factor(audible$Popular)
+```
+
+## Explore Data
+
+Quick check on data.
+
+```{r}
+str(audible)
+table(audible$Popular)
+sum(is.na(audible))
+```
+Explore variables using histograms. *RatingCount*, *Length* and *DaysReleased* are found to be skewed so they are log-transformed to make them more normally distributed.
+
+```{r}
+ggplot(audible, aes(x = Price, fill = Popular)) +
+    geom_histogram(bins = 30)
+```
+
+
+```{r}
+ggplot(audible, aes(x = RatingCount, fill = Popular)) +
+    geom_histogram(bins = 30)
+```
+
+
+```{r}
+audible$RatingCountLog <- log(audible$RatingCount)
+
+ggplot(audible, aes(x = RatingCountLog, fill = Popular)) +
+    geom_histogram(bins = 30)
+```
+
+```{r}
+ggplot(audible, aes(x = Length, fill = Popular)) +
+    geom_histogram(bins = 30)
+```
+
+```{r}
+audible$LengthLog <- log(audible$Length)
+
+ggplot(audible, aes(x = LengthLog, fill = Popular)) +
+    geom_histogram(bins = 30)
+```
+
+```{r}
+ggplot(audible, aes(x = DaysReleased, fill = Popular)) +
+    geom_histogram(bins = 30)
+```
+
+```{r}
+audible$DaysReleasedLog <- log(max(audible$DaysReleased) + 1 - audible$DaysReleased)
+
+ggplot(audible, aes(x = DaysReleasedLog, fill = Popular)) +
+    geom_histogram(bins = 30)
+```
+Explore *Category* using bar plot. Self-development books are found to have a high proportion of popular books. A new variable *SelfDevelopment* is added to possibly capture this pattern in model training.
+
+```{r}
+ggplot(audible, aes(y = Category, fill = Popular)) +
+    geom_bar(stat = 'count')
+```
+
+```{r}
+audible$SelfDevelopment <- ifelse(audible$Category == 'Self Development', 1, 0)
+table(audible$SelfDevelopment)
+```
+
+```{r}
+saveRDS(audible, 'audible-complete.rds')
+audible <- audible[c('Price', 'RatingCountLog', 'LengthLog', 'DaysReleasedLog', 'SelfDevelopment', 'Popular')]
+```
+
+## Train Data
+
+Split data for training.
+
+```{r}
+samples <- createDataPartition(audible$Popular, p = 0.8, list = FALSE)
+train.data <- audible[samples, ]
+test.data <- audible[-samples, ]
+```
+
+Training a classification model using logistic regression.
+
+```{r}
+model <- glm(Popular ~ Price + RatingCountLog + LengthLog + DaysReleasedLog + SelfDevelopment, data = train.data, family = binomial)
+summary(model)
+```
+Check the accuracy of prediction.
+
+```{r}
+test_probabilities <- predict(model, test.data, type = 'response')
+test_popular <- ifelse(test_probabilities > 0.5, 1, 0)
+accuracy <- mean(test_popular == test.data$Popular)
+accuracy
+```
+Check the classification matrix.
+
+```{r}
+test_popular <- as.factor(test_popular)
+confusionMatrix(test_popular, test.data$Popular, positive = '1')
+table(test_popular, test.data$Popular)
+prop.table(table(test_popular, test.data$Popular))
+```
+## Save Model & Data
+
+Make prediction on all audiobooks.
+
+```{r}
+probabilities <- predict(model, audible, type = 'response')
+audible$Predicted <- ifelse(probabilities > 0.5, 1, 0)
+accuracy <- mean(audible$Predicted == audible$Popular)
+accuracy
+```
+```{r}
+audible$Predicted <- as.factor(audible$Predicted)
+confusionMatrix(audible$Predicted, audible$Popular, positive = '1')
+table(audible$Predicted, audible$Popular)
+prop.table(table(audible$Predicted, audible$Popular))
+```
+Save model for future use.
+
+```{r}
+saveRDS(model, 'model-LR.rds')
+```
