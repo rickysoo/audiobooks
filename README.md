@@ -11,3 +11,6 @@ https://nbviewer.jupyter.org/github/rickysoo/audiobooks/blob/main/MachineLearnin
 
 Classifying and predicting popular audibooks using logistic regression:  
 https://rpubs.com/rickysoo/audiobooks_logistic
+
+A "human vs. machine" game to guess popular audiobooks:  
+https://rickysoo.shinyapps.io/beatit
